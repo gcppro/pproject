@@ -10,6 +10,7 @@ try {
     addAccessLogs($accessLogs, $req);
     switch ($handler) {
         case "index":
+            phpinfo();
             echo "API Server";
             break;
         case "ACCESS_LOGS":

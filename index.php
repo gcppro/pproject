@@ -1,6 +1,7 @@
 <?php
 require './pdos/DatabasePdo.php';
 require './pdos/IndexPdo.php';
+require './pdos/ChallengePdo.php';
 require './vendor/autoload.php';
 
 use \Monolog\Logger as Logger;
@@ -21,8 +22,16 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/test', ['IndexController', 'testPost']);
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/jwt', ['MainController', 'createJwt']);
-    
 
+    $r->addRoute('GET', '/challenge', ['ChallengeController', 'getChallenge']); // 1. 챌린지 첫 페이지
+    $r->addRoute('POST', '/challenge', ['ChallengeController', 'setChallenge']); // 2. 챌린지 추가
+    $r->addRoute('GET', '/challenge/{id}', ['ChallengeController', 'getChallengeDetail']); // 3. 모집 중인 챌린지 창
+    $r->addRoute('POST', 'challenge-participation', ['ChallengeController', 'setChallengeParticipation']); // 4. 챌린지 참여
+    $r->addRoute('GET', '/challenge-certification', ['ChallengeController', 'getChallengeCertification']); // 5. 챌린지 인증하기 창
+    $r->addRoute('POST', '/challenge-certification', ['ChallengeController', 'setChallengeCertification']); // 6. 챌린지 인증
+    $r->addRoute('GET', '/challenge-certification/{id}', ['ChallengeController', 'getChallengeCertificationDetail']); // 7. 인증 모여모여 창
+    $r->addRoute('UPDATE', '/challenge-certification/{id}', ['ChallengeController', 'updateChallengeCertification']); // 8. 인증 수정
+    $r->addRoute('DELETE', '/challenge-certification/{id}', ['ChallengeController', 'deleteChallengeCertification']); // 9. 인증 삭제
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
 //    // {id} must be a number (\d+)
@@ -79,6 +88,11 @@ switch ($routeInfo[0]) {
                 $handler = $routeInfo[1][1];
                 $vars = $routeInfo[2];
                 require './controllers/MainController.php';
+                break;
+            case 'ChallengeController':
+                $handler = $routeInfo[1][1];
+                $vars = $routeInfo[2];
+                require './controllers/ChallengeController.php';
                 break;
             /*case 'EventController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];

@@ -53,7 +53,7 @@ function testPost($name)
 
 function isValidUser($id, $pw){
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM User WHERE userId= ? AND userPw = ?) AS exist;";
+    $query = "SELECT EXISTS(SELECT * FROM member WHERE account_id= ? AND password = ?) AS exist;";
 
 
     $st = $pdo->prepare($query);
