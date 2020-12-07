@@ -69,18 +69,11 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 return;
             }
-            elseif(mb_strlen($req->description) < 10 OR empty($req->description)){
-                $res->is_success = FALSE;
-                $res->code = 400;
-                $res->message = "설명이 너무 짧습니다.";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                return;
-            }
             else{
                 $userInfo = getDataByJWToken($jwt, JWT_SECRET_KEY);
                 $account_id = $userInfo->id;
                 $member_id = getMemberId($account_id);
-                $challenge_id = setChallenge($member_id, $req->goal, $req->recruitment_start_date, $req->recruitment_end_date, $req->period, $req->amount, $req->image_url, $req->description);
+                $challenge_id = setChallenge($member_id, $req->goal, $req->recruitment_start_date, $req->recruitment_end_date, $req->period, $req->amount, $req->image_url);
                 setChallengeParticipation($member_id, $challenge_id);
                 updateMemberMoney(getChallengeAmount($challenge_id), $member_id);
                 $res->is_success = TRUE;

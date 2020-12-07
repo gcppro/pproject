@@ -84,10 +84,11 @@ WHERE challenge_id = ? AND is_deleted = 0;";
 function getChallengeMembers($challenge_id)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT id, member_id, challenge_start_date, is_success,
+    $query = "SELECT challenge_participation.id, member_id, challenge_start_date, is_success, m.nick_name,
        (SELECT COUNT(*) AS num FROM challenge_certification WHERE challenge_participation_id = challenge_participation.id AND challenge_certification.is_deleted = 0) AS certification_num
 FROM challenge_participation
-WHERE challenge_id = ? AND is_deleted = 0;";
+INNER JOIN member m on challenge_participation.member_id = m.id
+WHERE challenge_id = ? AND challenge_participation.is_deleted = 0;";
     $st = $pdo->prepare($query);
     $st->execute([$challenge_id]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
@@ -99,12 +100,12 @@ WHERE challenge_id = ? AND is_deleted = 0;";
     return $res;
 }
 
-function setChallenge($member_id, $goal, $recruitment_start_date, $recruitment_end_date, $period, $amount, $image_url, $description)
+function setChallenge($member_id, $goal, $recruitment_start_date, $recruitment_end_date, $period, $amount, $image_url)
 {
     $pdo = pdoSqlConnect();
-    $query = "INSERT INTO pproject.challenge(member_id, goal, recruitment_start_date, recruitment_end_date, period, amount, image_url, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+    $query = "INSERT INTO pproject.challenge(member_id, goal, recruitment_start_date, recruitment_end_date, period, amount, image_url) VALUES (?, ?, ?, ?, ?, ?, ?);";
     $st = $pdo->prepare($query);
-    $st->execute([$member_id, $goal, $recruitment_start_date, $recruitment_end_date, $period, $amount, $image_url, $description]);
+    $st->execute([$member_id, $goal, $recruitment_start_date, $recruitment_end_date, $period, $amount, $image_url]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
 
     $last_id = $pdo->lastInsertId();
@@ -118,11 +119,11 @@ function getChallengeDetail($id)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT challenge.id,
-       challenge.goal, CONCAT('모집시작일: ', YEAR(challenge.recruitment_start_date), '년 ', MONTH(challenge.recruitment_start_date), '월 ', DAY(challenge.recruitment_start_date), '일') AS start_date,
-       CONCAT('모집마감일: ', YEAR(challenge.recruitment_end_date), '년 ', MONTH(challenge.recruitment_end_date), '월 ', DAY(challenge.recruitment_end_date), '일') AS end_date,
-       CONCAT('챌린지기간: ', challenge.period, '일') AS period,
-       CONCAT('금액: ', challenge.amount, '원') AS amount,
-       CONCAT('주최자: ', m.nick_name) AS nick_name,
+       challenge.goal, CONCAT(YEAR(challenge.recruitment_start_date), '년 ', MONTH(challenge.recruitment_start_date), '월 ', DAY(challenge.recruitment_start_date), '일') AS start_date,
+       CONCAT(YEAR(challenge.recruitment_end_date), '년 ', MONTH(challenge.recruitment_end_date), '월 ', DAY(challenge.recruitment_end_date), '일') AS end_date,
+       CONCAT(challenge.period, '일') AS period,
+       CONCAT(challenge.amount, '원') AS amount,
+       CONCAT(m.nick_name) AS nick_name,
        challenge.image_url
 FROM challenge
 INNER JOIN member m on challenge.member_id = m.id

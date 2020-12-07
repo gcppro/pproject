@@ -41,3 +41,20 @@ function selectPw($id)
     return $res;
 }
 
+function selectUsers()
+{
+    $pdo = pdoSqlConnect();
+    $query = "select id, account_id, nick_name, created_at, is_deleted from member;";
+
+    $st = $pdo->prepare($query);
+    //    $st->execute([$param,$param]);
+    $st->execute([]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+

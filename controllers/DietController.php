@@ -61,6 +61,29 @@ try {
             }
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $id = $data->id;
+            $date = $_GET["date"];
+
+            if(empty($date)){
+                $res->isSucces = FALSE;
+                $res->code = 100;
+                $res->message = "date 를 입력해주세요.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+            }
+            else {
+                http_response_code(200);
+                $res->result["totalNutrient"] = selectTotalMealNut($id, $date);
+                $res->result["BreakfastResult"] = selectBMealList($id, $date);
+                $res->result["BreakfastTotalNutrient"] = selectBMealNut($id, $date);
+                $res->result["LunchResult"] = selectLMealList($id, $date);
+                $res->result["LunchTotalNutrient"] = selectLMealNut($id, $date);
+                $res->result["DinnerResult"] = selectDMealList($id, $date);
+                $res->result["DinnerTotalNutrient"] = selectDMealNut($id, $date);
+                $res->isSuccess = TRUE;
+                $res->code = 200;
+                $res->message = "식단 리스트 조회 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
 
 

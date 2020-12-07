@@ -101,6 +101,15 @@ try {
                 }
             }
 
+        case "selectUsers":
+            http_response_code(200);
+            $res->result = selectUsers();
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
 
 
 

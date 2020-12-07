@@ -2,6 +2,7 @@
 require './pdos/DatabasePdo.php';
 require './pdos/IndexPdo.php';
 require './pdos/ChallengePdo.php';
+require './pdos/ExercisePdo.php';
 require './pdos/UserPdo.php';
 require './pdos/DietPdo.php';
 require './vendor/autoload.php';
@@ -34,12 +35,14 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/challenge-certification/{id}', ['ChallengeController', 'getChallengeCertificationDetail']); // 7. 인증 모여모여 창
     $r->addRoute('UPDATE', '/challenge-certification/{id}', ['ChallengeController', 'updateChallengeCertification']); // 8. 인증 수정
     $r->addRoute('DELETE', '/challenge-certification/{id}', ['ChallengeController', 'deleteChallengeCertification']); // 9. 인증 삭제
+    $r->addRoute('GET', '/exercises', ['ExerciseController', 'getExercises']);
 
-    $r->addRoute('POST', '/user', ['UserController', 'signUp']);
+    $r->addRoute('POST', '/user', ['UserController', 'signUp']); 
     $r->addRoute('POST', '/token', ['UserController', 'login']);
-//
+    $r->addRoute('GET', '/web-admin/users', ['UserController', 'selectUsers']);
+
     $r->addRoute('POST', '/diet', ['DietController', 'setDiet']);
-//    $r->addRoute('GET', '/diet', ['DietController', 'getDiet']);
+    $r->addRoute('GET', '/diet', ['DietController', 'getDiet']);
 
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
@@ -111,6 +114,10 @@ switch ($routeInfo[0]) {
             case 'UserController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
                 require './controllers/UserController.php';
+                break;
+            case 'ExerciseController':
+                $handler = $routeInfo[1][1];
+                require './controllers/ExerciseController.php';
                 break;
             /*case 'SearchController':
                 $handler = $routeInfo[1][1]; $vars = $routeInfo[2];
