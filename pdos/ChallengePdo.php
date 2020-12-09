@@ -286,4 +286,27 @@ WHERE challenge_certification.id = ? AND challenge_certification.is_deleted = 0;
 
     return $res[0];
 }
-               
+
+function setChallengeExerciseGoal($challenge_id, $exercise_id, $count)
+{
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO pproject.challenge_exercise_goal(challenge_id, exercise_id, count) VALUES (?, ?, ?);";
+    $st = $pdo->prepare($query);
+    $st->execute([$challenge_id, $exercise_id, $count]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+
+    $st = null;
+    $pdo = null;
+}
+
+function setChallengeDietGoal($challenge_id, $cal)
+{
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO pproject.challenge_diet_goal(challenge_id, cal) VALUES (?, ?);";
+    $st = $pdo->prepare($query);
+    $st->execute([$challenge_id, $cal]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+
+    $st = null;
+    $pdo = null;
+}

@@ -36,6 +36,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('UPDATE', '/challenge-certification/{id}', ['ChallengeController', 'updateChallengeCertification']); // 8. 인증 수정
     $r->addRoute('DELETE', '/challenge-certification/{id}', ['ChallengeController', 'deleteChallengeCertification']); // 9. 인증 삭제
     $r->addRoute('GET', '/exercises', ['ExerciseController', 'getExercises']);
+    $r->addRoute('GET', '/exercise/{id}', ['ExerciseController', 'getExercisesDetail']);
 
     $r->addRoute('POST', '/user', ['UserController', 'signUp']); 
     $r->addRoute('POST', '/token', ['UserController', 'login']);

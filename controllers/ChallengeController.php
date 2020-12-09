@@ -73,14 +73,41 @@ try {
                 $userInfo = getDataByJWToken($jwt, JWT_SECRET_KEY);
                 $account_id = $userInfo->id;
                 $member_id = getMemberId($account_id);
-                $challenge_id = setChallenge($member_id, $req->goal, $req->recruitment_start_date, $req->recruitment_end_date, $req->period, $req->amount, $req->image_url);
-                setChallengeParticipation($member_id, $challenge_id);
-                updateMemberMoney(getChallengeAmount($challenge_id), $member_id);
-                $res->is_success = TRUE;
-                $res->code = 200;
-                $res->message = "챌린지 생성 성공했습니다.";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                return;
+                if(!(getUserMoney($member_id) < $req->amount)){
+                    $challenge_id = setChallenge($member_id, $req->goal, $req->recruitment_start_date, $req->recruitment_end_date, $req->period, $req->amount, $req->image_url);
+                    setChallengeParticipation($member_id, $challenge_id);
+                    updateMemberMoney(getChallengeAmount($challenge_id), $member_id);
+                    $exercise_id = explode(', ', $req->exercise_id);
+                    $count = explode(', ', $req->count);
+                    if(!empty($exercise_id)){
+                        for($i = 0; $i < count($exercise_id); $i++){
+                            if($exercise_id[$i] == 0){
+                                continue;
+                            }
+                            setChallengeExerciseGoal($challenge_id, $exercise_id[$i], $count[$i]);
+                        }
+                    }
+                    else{
+                        setChallengeDietGoal($challenge_id, $req->cal);
+                    }
+//                    $res->aa = count($exercise_id);
+//                    $res->type = gettype($exercise_id);
+//                    $res->bb = $req->exercise_id;
+//                    $res->cc = $exercise_id;
+                    $res->is_success = TRUE;
+                    $res->code = 200;
+                    $res->message = "챌린지 생성 성공했습니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    return;
+                }
+                else{
+                    $res->is_success = FALSE;
+                    $res->code = 400;
+                    $res->message = "돈이 부족합니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    return;
+                }
+
             }
             break;
 
@@ -102,6 +129,12 @@ try {
                 $res->result->nick_name = getChallengeDetail($vars["id"])[0]["nick_name"];
                 $res->result->image_url = getChallengeDetail($vars["id"])[0]["image_url"];
                 $res->result->members = getChallengeMembers($vars["id"]);
+                if(goalKind($vars["id"])){
+                    $res->result->goal_detail = getChallengeExerciseGoal($vars["id"]);
+                }
+                else{
+                    $res->result->goal_detail = getChallengeDietGoal($vars["id"]);
+                }
                 // 운동목표인지 식단목표인지 구분하는 if문 만들기.
                 $res->result->exercises = getExercises();
                 $res->is_success = TRUE;

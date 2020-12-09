@@ -16,6 +16,23 @@ try {
             $res->message = "운동 리스트 조회 성공했습니다.";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+        case 'getExercisesDetail':
+            if(!isExistExercise($vars["id"])){
+                $res->is_success = FALSE;
+                $res->code = 400;
+                $res->message = "존재하지 않는 운동자세입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            else{
+                $res->result = getExercisesDetail($vars["id"]);
+                $res->is_success = TRUE;
+                $res->code = 200;
+                $res->message = "운동 상세 조회 성공했습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
