@@ -39,10 +39,13 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
     $r->addRoute('POST', '/user', ['UserController', 'signUp']); 
     $r->addRoute('POST', '/token', ['UserController', 'login']);
-    $r->addRoute('GET', '/web-admin/users', ['UserController', 'selectUsers']);
 
     $r->addRoute('POST', '/diet', ['DietController', 'setDiet']);
     $r->addRoute('GET', '/diet', ['DietController', 'getDiet']);
+    $r->addRoute('GET', '/diet/{foodIdx}', ['DietController', 'foodNutrientDetail']);
+    $r->addRoute('DELETE', '/diet', ['DietController', 'deleteDiet']);
+
+    $r->addRoute('GET', '/web-admin/users', ['UserController', 'selectUsers']);
 
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');

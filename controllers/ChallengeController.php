@@ -102,6 +102,8 @@ try {
                 $res->result->nick_name = getChallengeDetail($vars["id"])[0]["nick_name"];
                 $res->result->image_url = getChallengeDetail($vars["id"])[0]["image_url"];
                 $res->result->members = getChallengeMembers($vars["id"]);
+                // 운동목표인지 식단목표인지 구분하는 if문 만들기.
+                $res->result->exercises = getExercises();
                 $res->is_success = TRUE;
                 $res->code = 200;
                 $res->message = "챌린지 세부 정보 조회 성공했습니다.";
