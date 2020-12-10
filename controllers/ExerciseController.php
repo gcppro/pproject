@@ -33,6 +33,8 @@ try {
                 return;
             }
             break;
+        case 'setExerciseCount':
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

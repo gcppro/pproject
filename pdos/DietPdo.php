@@ -93,7 +93,7 @@ where account_id = ? and breakfast_lunch_dinner = 'B' and created_at = ? and is_
     $res = $st->fetchAll();
     $st = null;
     $pdo = null;
-    return $res;
+    return $res[0];
 }
 
 function selectLMealNut($id, $date)
@@ -112,7 +112,7 @@ where account_id = ? and breakfast_lunch_dinner = 'L' and created_at = ? and is_
     $res = $st->fetchAll();
     $st = null;
     $pdo = null;
-    return $res;
+    return $res[0];
 }
 
 function selectDMealNut($id, $date)
@@ -131,7 +131,7 @@ where account_id = ? and breakfast_lunch_dinner = 'D' and created_at = ? and is_
     $res = $st->fetchAll();
     $st = null;
     $pdo = null;
-    return $res;
+    return $res[0];
 }
 
 function selectTotalMealNut($id, $date)
@@ -150,7 +150,7 @@ where account_id = ? and created_at = ? and is_deleted = '0';";
     $res = $st->fetchAll();
     $st = null;
     $pdo = null;
-    return $res;
+    return $res[0];
 }
 
 function selectFoodDetail($id, $foodNo)
