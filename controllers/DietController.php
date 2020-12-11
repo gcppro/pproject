@@ -4,6 +4,7 @@ require 'function.php';
 const JWT_SECRET_KEY = "TEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEY";
 
 $res = (Object)Array();
+$array = (Object)Array();
 header('Content-Type: json');
 $req = json_decode(file_get_contents("php://input"));
 //$json = file_get_contents("php://input");
@@ -171,6 +172,79 @@ try {
                 break;
             }
 
+
+        case "ongoingChallenge":
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];//사용자가 가지고 있는 토큰이 유효한지 확인하고
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 201;
+                $res->messag = "유효하지 않은 토큰입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $id = $data->id;
+
+            if(ongoingChallenge($id) == null){
+                http_response_code(200);
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "진행중인 챌린지가 없습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            http_response_code(200);
+            $res->result = ongoingChallenge($id);
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "진행중인 챌린지 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+
+        case "dietChallengeCertification":
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];//사용자가 가지고 있는 토큰이 유효한지 확인하고
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 201;
+                $res->messag = "유효하지 않은 토큰입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $id = $data->id;
+            $chIdx = $vars["chIdx"];
+
+            $array = getDietGoal($chIdx);
+
+            $cal = $array["cal"];
+            $startDate = $array["recruitment_start_date"];
+            $endDate = $array["recruitment_end_date"];
+            $period = $array["period"];
+            $goal = $array["goal"];
+            $totalSuccess = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
+            $percent = round(($period * 100) / $totalSuccess,2);
+
+            if(empty($totalSuccess)){
+                http_response_code(200);
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "챌린지 상세 데이터가 없습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            http_response_code(200);
+            $res->result["successDate"] = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
+            $res->result["period"] = $period;
+            $res->result["successPercent"] = $percent;
+            $res->result["goal"] = $goal;
+            $res->isSuccess = TRUE;
+            $res->code = 200;
+            $res->message = "챌린지 별 성공 현황 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
 
     }
 } catch (\Exception $e) {

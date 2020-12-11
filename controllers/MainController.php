@@ -29,6 +29,9 @@ try {
             }
 
             http_response_code(200);
+            $userInfo = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $account_id = $userInfo->id;
+            $res->id = $account_id;
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";

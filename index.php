@@ -47,7 +47,12 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/diet/{foodIdx}', ['DietController', 'foodNutrientDetail']);
     $r->addRoute('DELETE', '/diet', ['DietController', 'deleteDiet']);
 
+    $r->addRoute('GET', '/challenge-ongoing', ['DietController', 'ongoingChallenge']);
+    $r->addRoute('GET', '/challenge-ongoing/{chIdx}', ['DietController', 'dietChallengeCertification']);
+
     $r->addRoute('GET', '/web-admin/users', ['UserController', 'selectUsers']);
+    $r->addRoute('GET', '/web-admin/user/{userIdx}', ['UserController', 'selectUser']);
+
 
 
 //    $r->addRoute('GET', '/users', 'get_all_users_handler');
