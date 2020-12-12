@@ -227,15 +227,31 @@ try {
             $totalSuccess = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
             $percent = round(($period * 100) / $totalSuccess,2);
 
-            if(empty($totalSuccess)){
+            if(empty($chIdx)){
                 http_response_code(200);
                 $res->isSuccess = TRUE;
                 $res->code = 100;
+                $res->message = "챌린지 번호를 적어주세요.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            if (!isExistChallenge($chIdx)) {
+                $res->isSuccess = FALSE;
+                $res->code = 101;
+                $res->message = "존재하지 않는 챌린지 번호 입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            if(empty($totalSuccess)){
+                http_response_code(200);
+                $res->isSuccess = TRUE;
+                $res->code = 102;
                 $res->message = "챌린지 상세 데이터가 없습니다.";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 return;
             }
             http_response_code(200);
+            $res->result["challenge_id"] = $chIdx;
             $res->result["successDate"] = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
             $res->result["period"] = $period;
             $res->result["successPercent"] = $percent;
