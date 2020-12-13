@@ -215,6 +215,7 @@ try {
             }
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $id = $data->id;
+            $id = getMemberId($id);
             $chIdx = $vars["chIdx"];
 
             $array = getDietGoal($chIdx);

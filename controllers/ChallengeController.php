@@ -74,7 +74,7 @@ try {
                 $account_id = $userInfo->id;
                 $member_id = getMemberId($account_id);
                 if(!(getUserMoney($member_id) < $req->amount)){
-                    $challenge_id = setChallenge($member_id, $req->goal, $req->recruitment_start_date, $req->recruitment_end_date, $req->period, $req->amount, $req->image_url);
+                    $challenge_id = setChallenge($member_id, $req->goal, $req->recruitment_start_date, $req->recruitment_end_date, $req->period, $req->amount, $req->image_url, $req->kinds);
                     setChallengeParticipation($member_id, $challenge_id);
                     updateMemberMoney(getChallengeAmount($challenge_id), $member_id);
                     $exercise_id = explode(', ', $req->exercise_id);
@@ -112,7 +112,15 @@ try {
             break;
 
         case 'getChallengeDetail':
-            if(!isExistChallenge($vars["id"])){
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->is_success = FALSE;
+                $res->code = 400;
+                $res->message = "유효하지 않은 토큰입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            elseif(!isExistChallenge($vars["id"])){
                 $res->is_success = FALSE;
                 $res->code = 400;
                 $res->message = "존재하지 않는 챌린지입니다.";
@@ -120,6 +128,9 @@ try {
                 return;
             }
             else{
+                $userInfo = getDataByJWToken($jwt, JWT_SECRET_KEY);
+                $account_id = $userInfo->id;
+                $member_id = getMemberId($account_id);
                 $res->result->id = getChallengeDetail($vars["id"])[0]["id"];
                 $res->result->goal = getChallengeDetail($vars["id"])[0]["goal"];
                 $res->result->start_date = getChallengeDetail($vars["id"])[0]["start_date"];
@@ -128,6 +139,7 @@ try {
                 $res->result->amount = getChallengeDetail($vars["id"])[0]["amount"];
                 $res->result->nick_name = getChallengeDetail($vars["id"])[0]["nick_name"];
                 $res->result->image_url = getChallengeDetail($vars["id"])[0]["image_url"];
+                $res->result->is_participation = isChallengeParticipation($vars["id"], $member_id);
                 $res->result->members = getChallengeMembers($vars["id"]);
                 if(goalKind($vars["id"])){
                     $res->result->goal_detail = getChallengeExerciseGoal($vars["id"]);
@@ -155,7 +167,7 @@ try {
                 return;
             }
 
-            else if(!isExistChallenge($req->challenge_id)){
+            else if(!isExistChallenge($_GET["challenge_id"])){
                 $res->is_success = FALSE;
                 $res->code = 400;
                 $res->message = "존재하지 않는 챌린지입니다.";
@@ -166,23 +178,26 @@ try {
                  $userInfo = getDataByJWToken($jwt, JWT_SECRET_KEY);
                 $account_id = $userInfo->id;
                 $member_id = getMemberId($account_id);
-                if(getUserMoney($member_id) < getChallengeAmount($req->challenge_id)){
-                $res->is_success = FALSE;
-                $res->code = 400;
-                $res->message = "돈이 부족합니다.";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                return;
+                if(getUserMoney($member_id) < getChallengeAmount($_GET["challenge_id"])){
+                    $res->is_success = FALSE;
+                    $res->code = 400;
+                    $res->message = "돈이 부족합니다.";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    return;
                 }
                 else{
-                setChallengeParticipation($member_id, $req->challenge_id);
-                updateMemberMoney(getChallengeAmount($req->challenge_id), $member_id);
-                $res->is_success = TRUE;
-                $res->code = 200;
-                $res->message = "챌린지 참여 되었습니다!";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                return;
+                    setChallengeParticipation($member_id, $_GET["challenge_id"]);
+                    updateMemberMoney(getChallengeAmount($_GET["challenge_id"]), $member_id);
+                    $res->is_success = TRUE;
+                    $res->code = 200;
+                    $res->message = "챌린지 참여 되었습니다!";
+                    echo json_encode($res, JSON_NUMERIC_CHECK);
+                    return;
                 }
              }
+                break;
+
+            case '':
                 break;
 
             case 'getChallengeCertification':

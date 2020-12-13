@@ -35,6 +35,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/challenge-certification/{id}', ['ChallengeController', 'getChallengeCertificationDetail']); // 7. 인증 모여모여 창
     $r->addRoute('UPDATE', '/challenge-certification/{id}', ['ChallengeController', 'updateChallengeCertification']); // 8. 인증 수정
     $r->addRoute('DELETE', '/challenge-certification/{id}', ['ChallengeController', 'deleteChallengeCertification']); // 9. 인증 삭제
+    $r->addRoute('POST', '/challenge-daily-success', ['ChallengeController', 'setChallengeDailySuccess']);
     $r->addRoute('GET', '/exercises', ['ExerciseController', 'getExercises']);
     $r->addRoute('GET', '/exercise/{id}', ['ExerciseController', 'getExercisesDetail']);
     $r->addRoute('POST', '/exercise-count', ['ExerciseController', 'setExerciseCount']);

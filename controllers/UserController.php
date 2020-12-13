@@ -110,8 +110,16 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
-
-
+        case "selectUser":
+            $id = $vars["id"];
+            http_response_code(200);
+            $res->result = selectUserInfo($id);
+            $res->result["dietStatus"] = selectUserDietStatus($id);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "사용자 정보 상세 조회 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
 
     }
 } catch (\Exception $e) {

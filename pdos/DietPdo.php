@@ -299,3 +299,25 @@ group by date having totalCal < ?)challenge_result;";
 
     return $res[0]["successDate"];
 }
+
+function getDietStatus($chIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "select DATE (created_at) as date , round(sum(cal * resultGram)) as cal, round(sum(carb * resultGram), 2) as carb, round(sum(fat * resultGram), 2) as fat,
+round(sum(protein * resultGram), 2) as protein, round(sum(vitamin * resultGram),2) as vitamin from
+(select date_format(diet.created_at, '%Y-%m-%d') as created_at,
+        n.cal, n.carb, n.fat, n.protein, n.vitamin, n.gram/diet.gram as resultGram, account_id from diet
+left outer join nutrient n on diet.food_list = n.food_name) total
+where account_id = ?
+group by date;
+";
+    $st = $pdo->prepare($query);
+    $st->execute([$chIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
