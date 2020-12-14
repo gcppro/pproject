@@ -124,7 +124,7 @@ function getChallengeDetail($id)
        CONCAT(challenge.period, '일') AS period,
        CONCAT(challenge.amount, '원') AS amount,
        CONCAT(m.nick_name) AS nick_name,
-       challenge.image_url
+       challenge.image_url, challenge.kinds
 FROM challenge
 INNER JOIN member m on challenge.member_id = m.id
 WHERE challenge.id = ?;";

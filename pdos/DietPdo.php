@@ -248,10 +248,12 @@ group by challenge_id;";
 }
 
 
-function getDietGoal($chIdx)
+function getDietGoal($chIdx, $id)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT challenge.id, recruitment_start_date, recruitment_end_date, cal, period, goal
+    $query = "SELECT challenge.id, recruitment_start_date, recruitment_end_date, cal, period, goal,
+       date_format(cp.challenge_start_date, '%Y-%m-%d') as challenge_start_date,
+DATE_FORMAT(DATE_ADD(cp.challenge_start_date, INTERVAL period DAY), '%Y-%m-%d') as challenge_end_date
 FROM challenge
 INNER JOIN challenge_participation cp
     on challenge.id = cp.challenge_id
@@ -260,10 +262,9 @@ INNER JOIN member m
 INNER JOIN challenge_diet_goal cdg
     on cdg.challenge_id = challenge.id
 WHERE challenge.is_deleted = '0'
-    AND challenge.id = ?
-group by challenge.id;";
+    AND challenge.id = ? and account_id = ?";
     $st = $pdo->prepare($query);
-    $st->execute([$chIdx]);
+    $st->execute([$chIdx, $id]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 

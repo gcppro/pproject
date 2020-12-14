@@ -35,6 +35,28 @@ try {
             break;
         case 'setExerciseCount':
             break;
+
+        case 'getMypageUser':
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->is_success = FALSE;
+                $res->code = 400;
+                $res->message = "유효하지 않은 토큰입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            else{
+                $userInfo = getDataByJWToken($jwt, JWT_SECRET_KEY);
+                $account_id = $userInfo->id;
+                $member_id = getMemberId($account_id);
+                $res->result = getUserInfo($member_id);
+                $res->is_success = TRUE;
+                $res->code = 200;
+                $res->message = "유저 조회 성공했습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

@@ -65,7 +65,7 @@ WHERE challenge_id = ?;";
 function getChallengeDietGoal($challenge_id)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT CONCAT('목표 칼로리: ', cal, ' kcal') AS cal
+    $query = "SELECT CONCAT('목표 칼로리: ', cal, ' kcal') AS goal
 FROM challenge_diet_goal
 WHERE challenge_id = ?;";
     $st = $pdo->prepare($query);
@@ -87,6 +87,23 @@ FROM exercise
 WHERE id = ?;";
     $st = $pdo->prepare($query);
     $st->execute([$exercise_id]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
+function getUserInfo($id)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT nick_name, money
+FROM member
+WHERE id = ?;";
+    $st = $pdo->prepare($query);
+    $st->execute([$id]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 

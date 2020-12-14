@@ -13,6 +13,10 @@ use Monolog\Handler\StreamHandler;
 date_default_timezone_set('Asia/Seoul');
 ini_set('default_charset', 'utf8mb4');
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Max-Age: 86400');
+header('Access-Control-Allow-Headers: x-requested-with');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 //에러출력하게 하는 코드
 //error_reporting(E_ALL); ini_set("display_errors", 1);
 
@@ -39,6 +43,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/exercises', ['ExerciseController', 'getExercises']);
     $r->addRoute('GET', '/exercise/{id}', ['ExerciseController', 'getExercisesDetail']);
     $r->addRoute('POST', '/exercise-count', ['ExerciseController', 'setExerciseCount']);
+    $r->addRoute('GET', '/mypage-user', ['ExerciseController', 'getMypageUser']);
 
     $r->addRoute('POST', '/user', ['UserController', 'signUp']); 
     $r->addRoute('POST', '/token', ['UserController', 'login']);
@@ -52,7 +57,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/challenge-ongoing/{chIdx}', ['DietController', 'dietChallengeCertification']);
 
     $r->addRoute('GET', '/web-admin/users', ['UserController', 'selectUsers']);
-    $r->addRoute('GET', '/web-admin/user/{userIdx}', ['UserController', 'selectUser']);
+    $r->addRoute('GET', '/web-admin/user/{id}', ['UserController', 'selectUser']);
+
 
 
 

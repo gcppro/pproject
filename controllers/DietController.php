@@ -215,18 +215,22 @@ try {
             }
             $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
             $id = $data->id;
-            $id = getMemberId($id);
+//            $id = getMemberId($accountId);
             $chIdx = $vars["chIdx"];
 
-            $array = getDietGoal($chIdx);
 
+            $array = getDietGoal($chIdx, $id);
             $cal = $array["cal"];
-            $startDate = $array["recruitment_start_date"];
-            $endDate = $array["recruitment_end_date"];
+            $startDate = $array["challenge_start_date"];
+            $endDate = $array["challenge_end_date"];
             $period = $array["period"];
             $goal = $array["goal"];
             $totalSuccess = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
-            $percent = round(($period * 100) / $totalSuccess,2);
+            $percent = round((100 / $period) * $totalSuccess ,2);
+            
+//            echo $startDate;
+//            echo $goal;
+//            echo $id;
 
             if(empty($chIdx)){
                 http_response_code(200);
