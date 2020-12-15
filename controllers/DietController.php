@@ -227,7 +227,7 @@ try {
             $goal = $array["goal"];
             $totalSuccess = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
             $percent = round((100 / $period) * $totalSuccess ,2);
-            
+
 //            echo $startDate;
 //            echo $goal;
 //            echo $id;
@@ -266,6 +266,70 @@ try {
             $res->message = "챌린지 별 성공 현황 조회 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+
+        case "successCertification":
+            $jwt = $_SERVER["HTTP_X_ACCESS_TOKEN"];//사용자가 가지고 있는 토큰이 유효한지 확인하고
+            if (!isValidHeader($jwt, JWT_SECRET_KEY)) {
+                $res->isSuccess = FALSE;
+                $res->code = 201;
+                $res->messag = "유효하지 않은 토큰입니다";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                addErrorLogs($errorLogs, $res, $req);
+                return;
+            }
+            $data = getDataByJWToken($jwt, JWT_SECRET_KEY);
+            $id = $data->id;
+
+            $chIdx = $req->chIdx;
+
+            $array = getDietGoal($chIdx, $id);
+            $cal = $array["cal"];
+            $amount = $array["amount"];
+            $startDate = $array["challenge_start_date"];
+            $endDate = $array["challenge_end_date"];
+            $period = $array["period"];
+            $goal = $array["goal"];
+            $totalSuccess = ongoingChallengeCTF($id, $startDate, $endDate, $cal);
+            $percent = round((100 / $period) * $totalSuccess ,2);
+
+            if(empty($chIdx)){
+                http_response_code(200);
+                $res->isSuccess = FALSE;
+                $res->code = 100;
+                $res->message = "챌린지 번호를 적어주세요";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+
+            if(!(checkBreakfast($id, $endDate)||checkLunch($id, $endDate)||checkDinner($id, $endDate))){
+                http_response_code(200);
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "아침, 점심, 저녁 값이 모두 입력되지 않았습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+            }
+
+            if(alreadyReturnMoney($id, $chIdx)){
+                http_response_code(200);
+                $res->isSuccess = FALSE;
+                $res->code = 301;
+                $res->message = "이미 금액이 반환됐습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                return;
+           }
+            
+            if($percent == '100') {
+                http_response_code(200);
+                updateIsSuccess($chIdx, $id);
+                returnMoney($amount, $id);
+                $res->isSuccess = TRUE;
+                $res->code = 200;
+                $res->message = "성공 챌린지 금액 리턴 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
     }
 } catch (\Exception $e) {

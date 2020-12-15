@@ -87,9 +87,11 @@ try {
                             setChallengeExerciseGoal($challenge_id, $exercise_id[$i], $count[$i]);
                         }
                     }
-                    else{
+                    if(!empty($req->cal)){
                         setChallengeDietGoal($challenge_id, $req->cal);
+                        $res->test = "nop";
                     }
+
 //                    $res->aa = count($exercise_id);
 //                    $res->type = gettype($exercise_id);
 //                    $res->bb = $req->exercise_id;

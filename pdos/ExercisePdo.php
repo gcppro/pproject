@@ -112,3 +112,15 @@ WHERE id = ?;";
 
     return $res[0];
 }
+
+function setExerciseCount($exercise_id, $member_id, $count)
+{
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO pproject.exercise_count(exercise_id, member_id, count) VALUES (?, ?, ?);";
+    $st = $pdo->prepare($query);
+    $st->execute([$exercise_id, $member_id, $count]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+
+    $st = null;
+    $pdo = null;
+}

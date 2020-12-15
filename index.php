@@ -55,6 +55,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
     $r->addRoute('GET', '/challenge-ongoing', ['DietController', 'ongoingChallenge']);
     $r->addRoute('GET', '/challenge-ongoing/{chIdx}', ['DietController', 'dietChallengeCertification']);
+    $r->addRoute('POST', '/challenge-success', ['DietController', 'successCertification']);
+
 
     $r->addRoute('GET', '/web-admin/users', ['UserController', 'selectUsers']);
     $r->addRoute('GET', '/web-admin/user/{id}', ['UserController', 'selectUser']);

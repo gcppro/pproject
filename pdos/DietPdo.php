@@ -251,9 +251,9 @@ group by challenge_id;";
 function getDietGoal($chIdx, $id)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT challenge.id, recruitment_start_date, recruitment_end_date, cal, period, goal,
+    $query = "SELECT challenge.id, recruitment_start_date, recruitment_end_date, cal, period, goal, amount,
        date_format(cp.challenge_start_date, '%Y-%m-%d') as challenge_start_date,
-DATE_FORMAT(DATE_ADD(cp.challenge_start_date, INTERVAL period DAY), '%Y-%m-%d') as challenge_end_date
+DATE_FORMAT(DATE_ADD(cp.challenge_start_date, INTERVAL period - 1 DAY), '%Y-%m-%d') as challenge_end_date
 FROM challenge
 INNER JOIN challenge_participation cp
     on challenge.id = cp.challenge_id
@@ -321,4 +321,94 @@ group by date;
     $pdo = null;
 
     return $res[0];
+}
+
+function checkBreakfast($id, $endDate){
+
+    $pdo = pdoSqlConnect();
+    $query = "select exists(select breakfast_lunch_dinner
+    from diet
+    where breakfast_lunch_dinner = 'B'
+    and account_id = ? and date_format(diet.created_at, '%Y-%m-%d') = ?)
+    exist;";
+    $st = $pdo->prepare($query);
+    $st->execute([$id, $endDate]);
+    $res = $st->fetchAll();
+
+    return intval($res[0]["exist"]);
+}
+
+function checkLunch($id, $endDate)
+{
+
+    $pdo = pdoSqlConnect();
+    $query = "select exists(select breakfast_lunch_dinner
+from diet
+    where breakfast_lunch_dinner = 'L'
+    and account_id = ? and date_format(diet.created_at, '%Y-%m-%d') = ?)
+    exist;";
+    $st = $pdo->prepare($query);
+    $st->execute([$id, $endDate]);
+    $res = $st->fetchAll();
+
+    return intval($res[0]["exist"]);
+}
+
+function checkDinner($id, $endDate)
+{
+
+    $pdo = pdoSqlConnect();
+    $query = "select exists(select breakfast_lunch_dinner
+from diet
+    where breakfast_lunch_dinner = 'D'
+    and account_id = ? and date_format(diet.created_at, '%Y-%m-%d') = ?)
+    exist;";
+    $st = $pdo->prepare($query);
+    $st->execute([$id, $endDate]);
+    $res = $st->fetchAll();
+
+    return intval($res[0]["exist"]);
+}
+
+function alreadyReturnMoney($id, $chIdx)
+{
+
+    $pdo = pdoSqlConnect();
+    $query = "select exists (select challenge_id, account_id
+    from challenge_participation
+    inner join member m on challenge_participation.member_id = m.id
+    where account_id = ? and  challenge_id = ? and is_success = '1')
+exist;";
+    $st = $pdo->prepare($query);
+    $st->execute([$id, $chIdx]);
+    $res = $st->fetchAll();
+
+    return intval($res[0]["exist"]);
+}
+
+
+
+function updateIsSuccess($chIdx, $id)
+{
+    $pdo = pdoSqlConnect();
+    $query = "update challenge_participation c
+inner join member m
+on m.id = c.member_id
+set is_success = '1'
+where c.challenge_id = ? and account_id = ?;";
+    $st = $pdo->prepare($query);
+    $st->execute([$chIdx, $id]);
+    $st = null;
+    $pdo = null;
+}
+
+function returnMoney($amount, $id)
+{
+    $pdo = pdoSqlConnect();
+    $query = "UPDATE pproject.member m
+SET money = money + ? WHERE account_id = ?;";
+    $st = $pdo->prepare($query);
+    $st->execute([$amount, $id]);
+    $st = null;
+    $pdo = null;
 }
